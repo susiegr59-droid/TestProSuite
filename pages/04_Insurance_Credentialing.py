@@ -767,6 +767,9 @@ with st.container():
             edit_secondary_taxonomy, edit_secondary_taxonomy_code = split_taxonomy_choice(edit_secondary_taxonomy_choice)
             edit_tertiary_taxonomy, edit_tertiary_taxonomy_code = split_taxonomy_choice(edit_tertiary_taxonomy_choice)
 
+            credentialing_df["Approval Date"] = credentialing_df["Approval Date"].astype(object)
+            credentialing_df["Next Recredentialing Due"] = credentialing_df["Next Recredentialing Due"].astype(object)
+
             credentialing_df.loc[match_mask, "Location"] = edit_location
             credentialing_df.loc[match_mask, "Insurance Plan"] = edit_insurance_plan.strip()
             credentialing_df.loc[match_mask, "Application Submitted"] = edit_application_submitted.strftime("%m/%d/%Y")
