@@ -28,6 +28,17 @@ st.markdown("""
         border-radius: 10px;
         font-weight: 600;
     }
+
+    /* Darker table grid lines for the license editor */
+    div[data-testid="stDataFrame"] [role="grid"] {
+        border: 1px solid #7f8893 !important;
+    }
+
+    div[data-testid="stDataFrame"] [role="columnheader"],
+    div[data-testid="stDataFrame"] [role="gridcell"] {
+        border-right: 1px solid #8e97a3 !important;
+        border-bottom: 1px solid #8e97a3 !important;
+    }
 </style>
 """, unsafe_allow_html=True)
 
