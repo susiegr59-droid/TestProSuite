@@ -1,0 +1,4 @@
+ProviderID,First Name,Last Name,DOB,SSN (Last 4),NPI,Taxonomy,Specialty,Address,City,State,Zip,Phone,Email,Start Date,Onboarding Status,Credentialing Status,Provider Status,Notes,Credentials
+1,,,,,1215112537,,Pain Managment,,,,,,,10/01/2019,Complete,Complete,Active,,
+2,Ritu,Varma,10/01/2019,,1215112537,207LP2900X,,2952 Bonds Ridge Ct,Oakton,VA,22191.0,,,10/01/2026,Not Started,Not Started,Active,,
+3,Robert Frederick,Jenkins III,03/24/1987,,1487071981,363LF0000X,,5411 Richardsons Endeavor Dr,Bowie,MD,20720-3390,301-345-7030,ROBERTJ612@GMAIL.COM,08/01/2024,In Progress,In Progress,Active,check the MD Medicaids MCO for completion,FNP-BC

@@ -1,0 +1,25 @@
+[theme]
+primaryColor = "#3870af"
+backgroundColor = "#eef3f8"
+secondaryBackgroundColor = "#e8eef5"
+textColor = "#1a1a1a"
+font = "sans serif"
+
+[client]
+showErrorDetails = true
+toolbarMode = "auto"
+
+[logger]
+level = "info"
+
+[server]
+# Port to run the app on
+port = 8501
+# Host to bind to (use 0.0.0.0 for network access)
+headless = true
+# For production, set to your domain or IP
+baseUrlPath = ""
+runOnSave = true
+
+[browser]
+gatherUsageStats = false

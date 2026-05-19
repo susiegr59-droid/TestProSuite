@@ -1,0 +1,4 @@
+PayerID,Payer Name,Contractor,State/Region,Cycle Years,Phone,Fax,Portal,Notes,Active
+1,Medicare MD,Novitas Solution,MD,5,877-235-8073,877-439-5479,https://www.novitasphere.com/secure/login,,Yes
+2,Medicare VA,Palmetto,VA,3,803-735-1034,,,,Yes
+3,Carefirst BCBS,Carefirst,MD,3,555-555-5555,nan,https://provider.carefirst.com/prv/#/home,nan,Yes
