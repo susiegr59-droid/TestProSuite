@@ -390,11 +390,9 @@ with st.container():
 section_header("License Manager")
 
 with st.container():
-    st.markdown('<div class="panel">', unsafe_allow_html=True)
-
-    st.caption(
-        "Edit records directly in the table below, then click Save Changes."
-    )
+    st.markdown('<div style="border: 4px solid #205080; border-radius: 16px; padding: 1.5rem 1rem 0.5rem 1rem; margin-bottom: 1.2rem; box-shadow: 0 0 0 4px #eaf3ff;">', unsafe_allow_html=True)
+    st.markdown('<h3 style="color: #205080; font-weight: 900; margin-bottom: 0.7rem; letter-spacing: 0.5px;">📝 ADD OR EDIT LICENSES BELOW</h3>', unsafe_allow_html=True)
+    st.markdown('<div style="font-weight: 800; font-size: 1rem; color: #102a43; margin-bottom: 0.6rem;">Edit records directly in the table below, then click Save Changes.</div>', unsafe_allow_html=True)
 
     editor_df = filtered_df[
         [
@@ -484,10 +482,9 @@ with st.container():
     b1, b2, _ = st.columns([1, 1, 3])
 
     with b1:
-        if st.button("💾 Save Changes", use_container_width=True):
-
+        save_clicked = st.button("💾 Save Changes", use_container_width=True)
+        if save_clicked:
             save_df = edited_df.copy()
-
             for col in [
                 "Issue Date",
                 "Expiration Date",
@@ -497,14 +494,11 @@ with st.container():
                     save_df[col],
                     errors="coerce"
                 )
-
             export_df = format_export_df(save_df)
-
             try:
                 save_csv(export_df, DATA_PATH)
-                st.success("Licenses file saved successfully.")
-                st.rerun()
-
+                st.success("Licenses file saved successfully.", icon="✅")
+                st.experimental_rerun()
             except Exception as e:
                 st.error(f"Unable to save licenses file: {e}")
 
