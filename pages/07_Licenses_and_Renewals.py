@@ -1,6 +1,7 @@
 import streamlit as st
 import pandas as pd
 from datetime import date
+import time
 
 from utils.csv_helpers import load_csv, save_csv
 from utils.ui_helpers import apply_page_style, render_sidebar, render_page_hero, section_header, overview_metric_card
@@ -508,8 +509,8 @@ with st.container():
             export_df = format_export_df(save_df)
             try:
                 save_csv(export_df, DATA_PATH)
-                st.success("Licenses file saved successfully.", icon="✅")
-                st.experimental_rerun()
+                st.session_state["licenses_saved_at"] = time.time()
+                st.rerun()
             except Exception as e:
                 st.error(f"Unable to save licenses file: {e}")
 
@@ -529,6 +530,13 @@ with st.container():
             mime="text/csv",
             use_container_width=True,
         )
+
+    if "licenses_saved_at" in st.session_state:
+        seconds_since_save = time.time() - st.session_state["licenses_saved_at"]
+        if seconds_since_save <= 4:
+            st.success("Licenses file saved successfully.", icon="✅")
+        else:
+            del st.session_state["licenses_saved_at"]
 
     st.markdown('</div>', unsafe_allow_html=True)
 
