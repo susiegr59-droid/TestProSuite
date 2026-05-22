@@ -48,6 +48,20 @@ st.markdown("""
 # HELPERS
 # =========================================================
 DATA_PATH = "data/licenses.csv"
+LICENSE_COLUMNS = [
+    "LicenseID",
+    "ProviderID",
+    "Provider Name",
+    "Provider",
+    "License Type",
+    "License Number",
+    "State",
+    "Issue Date",
+    "Expiration Date",
+    "Renewal Submitted",
+    "Status",
+    "Notes",
+]
 
 
 def coalesce_column(df: pd.DataFrame, candidates: list[str], new_name: str):
@@ -66,6 +80,11 @@ def normalize_license_df(df: pd.DataFrame) -> pd.DataFrame:
 
     df = df.copy()
 
+    if "Provider Name" in df.columns and "Provider" not in df.columns:
+        df["Provider"] = df["Provider Name"]
+    if "Provider" in df.columns and "Provider Name" not in df.columns:
+        df["Provider Name"] = df["Provider"]
+
     df = coalesce_column(df, ["Provider", "Provider Name", "provider_name", "Name"], "Provider")
     df = coalesce_column(df, ["License Type", "Type", "license_type"], "License Type")
     df = coalesce_column(df, ["License Number", "Number", "license_number"], "License Number")
@@ -76,17 +95,7 @@ def normalize_license_df(df: pd.DataFrame) -> pd.DataFrame:
     df = coalesce_column(df, ["Status", "License Status", "status"], "Status")
     df = coalesce_column(df, ["Notes", "Comments"], "Notes")
 
-    required_order = [
-        "Provider",
-        "License Type",
-        "License Number",
-        "State",
-        "Issue Date",
-        "Expiration Date",
-        "Renewal Submitted",
-        "Status",
-        "Notes",
-    ]
+    required_order = LICENSE_COLUMNS
 
     for col in required_order:
         if col not in df.columns:
@@ -160,10 +169,7 @@ PROVIDERS_COLUMNS = [
     "Taxonomy",
 ]
 
-try:
-    raw_df = load_csv(DATA_PATH)
-except Exception:
-    raw_df = pd.DataFrame()
+raw_df = load_csv(DATA_PATH, LICENSE_COLUMNS)
 
 licenses_df = normalize_license_df(raw_df)
 licenses_df = add_calculated_fields(licenses_df)
@@ -406,8 +412,10 @@ with st.container():
     st.markdown('<h3 style="color: #205080; font-weight: 900; margin-bottom: 0.7rem; letter-spacing: 0.5px;">📝 ADD OR EDIT LICENSES BELOW</h3>', unsafe_allow_html=True)
     st.markdown('<div style="font-weight: 800; font-size: 1rem; color: #102a43; margin-bottom: 0.6rem;">Edit records directly in the table below, then click Save Changes.</div>', unsafe_allow_html=True)
 
-    editor_df = filtered_df[
+    editor_df = licenses_df[
         [
+            "ProviderID",
+            "Provider Name",
             "Provider",
             "License Type",
             "License Number",
@@ -426,7 +434,18 @@ with st.container():
         hide_index=True,
         num_rows="dynamic",
         key="licenses_editor",
+        disabled=["ProviderID", "Provider Name"],
         column_config={
+            "ProviderID": st.column_config.TextColumn(
+                "Provider ID",
+                width="small",
+            ),
+
+            "Provider Name": st.column_config.TextColumn(
+                "Provider Name",
+                width="medium",
+            ),
+
             "Provider": st.column_config.SelectboxColumn(
                 "Provider",
                 options=provider_options,
@@ -491,12 +510,20 @@ with st.container():
         },
     )
 
+    st.markdown(
+        '<div class="small-note"><strong>Note:</strong> License Manager edits the full license list. Filters above only affect the summary views.</div>',
+        unsafe_allow_html=True,
+    )
+
     b1, b2, _ = st.columns([1, 1, 3])
 
     with b1:
         save_clicked = st.button("💾 Save Changes", use_container_width=True)
         if save_clicked:
             save_df = edited_df.copy()
+            # Keep Provider Name for pages that still read legacy column names.
+            save_df["Provider Name"] = save_df["Provider"]
+            save_df["ProviderID"] = pd.to_numeric(save_df.get("ProviderID"), errors="coerce")
             for col in [
                 "Issue Date",
                 "Expiration Date",
@@ -510,6 +537,7 @@ with st.container():
             try:
                 save_csv(export_df, DATA_PATH)
                 st.session_state["licenses_saved_at"] = time.time()
+                st.session_state["licenses_saved_rows"] = len(export_df)
                 st.rerun()
             except Exception as e:
                 st.error(f"Unable to save licenses file: {e}")
@@ -534,9 +562,15 @@ with st.container():
     if "licenses_saved_at" in st.session_state:
         seconds_since_save = time.time() - st.session_state["licenses_saved_at"]
         if seconds_since_save <= 4:
-            st.success("Licenses file saved successfully.", icon="✅")
+            saved_rows = st.session_state.get("licenses_saved_rows")
+            if isinstance(saved_rows, int):
+                st.success(f"Licenses file saved successfully. Rows saved: {saved_rows}.", icon="✅")
+            else:
+                st.success("Licenses file saved successfully.", icon="✅")
         else:
             del st.session_state["licenses_saved_at"]
+            if "licenses_saved_rows" in st.session_state:
+                del st.session_state["licenses_saved_rows"]
 
     st.markdown('</div>', unsafe_allow_html=True)
 

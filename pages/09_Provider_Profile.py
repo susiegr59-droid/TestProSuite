@@ -325,6 +325,7 @@ licenses_df = load_csv(licenses_file, [
     "LicenseID",
     "ProviderID",
     "Provider Name",
+    "Provider",
     "License Type",
     "License Number",
     "State",
@@ -386,7 +387,7 @@ if credentialing_df is None or credentialing_df.empty:
 
 if licenses_df is None or licenses_df.empty:
     licenses_df = pd.DataFrame(columns=[
-        "LicenseID", "ProviderID", "Provider Name", "License Type",
+        "LicenseID", "ProviderID", "Provider Name", "Provider", "License Type",
         "License Number", "State", "Expiration Date", "Status"
     ])
 
@@ -451,12 +452,13 @@ else:
     activity_by_id = pd.to_numeric(activity_df.get("ProviderID", pd.Series(dtype="float64")), errors="coerce") == selected_provider_id
 
     credentialing_by_name = credentialing_df.get("Provider Name", pd.Series(dtype="object")).fillna("").astype(str).str.strip().str.lower() == selected_provider_name
+    licenses_by_provider = licenses_df.get("Provider", pd.Series(dtype="object")).fillna("").astype(str).str.strip().str.lower() == selected_provider_name
     licenses_by_name = licenses_df.get("Provider Name", pd.Series(dtype="object")).fillna("").astype(str).str.strip().str.lower() == selected_provider_name
     recred_by_name = recred_df.get("Provider Name", pd.Series(dtype="object")).fillna("").astype(str).str.strip().str.lower() == selected_provider_name
     activity_by_name = activity_df.get("Provider Name", pd.Series(dtype="object")).fillna("").astype(str).str.strip().str.lower() == selected_provider_name
 
     provider_credentialing = credentialing_df[credentialing_by_id | credentialing_by_name].copy()
-    provider_licenses = licenses_df[licenses_by_id | licenses_by_name].copy()
+    provider_licenses = licenses_df[licenses_by_id | licenses_by_name | licenses_by_provider].copy()
     provider_recred = recred_df[recred_by_id | recred_by_name].copy()
     provider_activity = activity_df[activity_by_id | activity_by_name].copy()
 
